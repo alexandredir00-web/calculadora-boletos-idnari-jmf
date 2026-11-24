@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Calculadora de Boletos - IDNARI & JMF</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: #f4f7f6;
+            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            background-color: #1a1e29;
+            min-height: 100vh;
+            padding: 20px 12px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 480px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .logo-icon {
+            font-size: 24px;
+        }
+        .header h1 {
+            color: #1e293b;
+            font-size: 22px;
+            margin-bottom: 4px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .header p {
+            color: #d97706;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #334155;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 16px;
+            background: #f8fafc;
+            appearance: none;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            color: #1e293b;
+            -webkit-appearance: none;
+        }
+        .input-group input:focus {
+            border-color: #f59e0b;
+            background: #ffffff;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
+        }
+
+        .result-card {
+            background: #ffffff;
+            border-radius: 24px;
+            border: 2px solid #e2e8f0;
+            overflow: hidden;
+            margin-top: 24px;
+        }
+        .result-header {
+            background: #f59e0b;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .result-title { font-size: 16px; font-weight: 800; margin-bottom: 2px; }
+        .result-subtitle { font-size: 12px; opacity: 0.9; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .result-body { padding: 20px; }
+        
+        .result-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 360px) {
+            .result-main { grid-template-columns: 1fr; }
+        }
+
+        .result-box {
+            padding: 16px;
+            border-radius: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .cobrar-box { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+        .receber-box { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        
+        .box-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9; margin-bottom: 4px; }
+        .box-value { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+
+        .result-details {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 16px;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .result-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .result-label { color: #64748b; font-weight: 600; font-size: 13px; }
+        .result-value { color: #1e293b; font-weight: 800; font-size: 14px; }
+
+        .hidden { display: none !important; }
+
+        .btn-whatsapp {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 16px;
+            margin-top: 16px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+        .btn-whatsapp:active {
+            transform: scale(0.97);
+            background: #1eb956;
+        }
+        .btn-whatsapp svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .btn-copy {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-copy:active {
+            background: #e2e8f0;
+        }
+
+        .company-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .company-name {
+            color: #1e293b;
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .info-badge {
+            background: #fffbeb;
+            color: #b45309;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: center;
+            border: 1px solid #fde68a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <span class="logo-icon">📄</span>
+                <span class="logo-icon">✨</span>
+            </div>
+            <h1>IDNARI & JMF</h1>
+            <p>Calculadora de Boletos</p>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="valorBoleto">Valor do Boleto</label>
+                    <input type="text" id="valorBoleto" placeholder="R$ 0,00" inputmode="decimal" enterkeyhint="done">
+                </div>
+                <div class="input-group">
+                    <label for="dataVencimento">Vencimento</label>
+                    <input type="date" id="dataVencimento">
+                </div>
+                <div class="input-group">
+                    <label for="diasAtraso">Dias em atraso</label>
+                    <input type="number" id="diasAtraso" min="0" placeholder="0" inputmode="numeric">
+                </div>
+                <div class="info-badge">
+                    Multa de 2% + Juros de 5% ao mês (proporcional aos dias)
+                </div>
+            </div>
+
+            <div class="result-section">
+                <div id="resultado" class="result-card">
+                    <div class="result-header">
+                        <div class="result-title">Resumo do Boleto</div>
+                        <div class="result-subtitle">Atualização de Valores</div>
+                    </div>
+                    
+                    <div class="result-body">
+                        <div class="result-main">
+                            <div class="result-box cobrar-box">
+                                <span class="box-label">Total Atualizado</span>
+                                <span class="box-value" id="valorCobrarBox">R$ 0,00</span>
+                            </div>
+                            <div class="result-box receber-box">
+                                <span class="box-label">Valor a Receber</span>
+                                <span class="box-value" id="liquidoReceberBox">R$ 0,00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="result-details">
+                            <div class="result-row">
+                                <span class="result-label">Valor Original</span>
+                                <span class="result-value" id="valorOriginal">R$ 0,00</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">Multa (2%)</span>
+                                <span class="result-value" id="valorMulta">R$ 0,00</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">Juros (5% a.m.)</span>
+                                <span class="result-value" id="valorJuros">R$ 0,00</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label">Dias de Atraso</span>
+                                <span class="result-value" id="diasAtrasoDisplay">0</span>
+                            </div>
+                        </div>
+
+                        <button id="btnWhatsapp" class="btn-whatsapp hidden">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                            Enviar Cálculo para o Cliente
+                        </button>
+
+                        <button id="btnCopiar" class="btn-copy hidden">
+                            📋 Copiar Resumo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="company-footer">
+            <div class="company-name">IDNARI & JMF COSMÉTICOS</div>
+        </div>
+    </div>
+
+    <script>
+        const elements = {
+            valorBoleto: document.getElementById('valorBoleto'),
+            dataVencimento: document.getElementById('dataVencimento'),
+            diasAtraso: document.getElementById('diasAtraso'),
+            valorOriginal: document.getElementById('valorOriginal'),
+            valorCobrarBox: document.getElementById('valorCobrarBox'),
+            liquidoReceberBox: document.getElementById('liquidoReceberBox'),
+            valorMulta: document.getElementById('valorMulta'),
+            valorJuros: document.getElementById('valorJuros'),
+            diasAtrasoDisplay: document.getElementById('diasAtrasoDisplay'),
+            btnWhatsapp: document.getElementById('btnWhatsapp'),
+            btnCopiar: document.getElementById('btnCopiar')
+        };
+
+        let ultimoCalculo = {
+            valorOriginal: 0,
+            diasAtraso: 0,
+            encargosTotais: 0,
+            valorTotal: 0
+        };
+
+        function formatarReal(valor) {
+            if (isNaN(valor) || valor === undefined) valor = 0;
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+        }
+
+        function formatarInputValor(input) {
+            let valor = input.value.replace(/\D/g, '');
+            if (valor) {
+                const numero = parseInt(valor, 10) / 100;
+                input.value = numero.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            } else {
+                input.value = '';
+            }
+            calcularJurosBoleto();
+        }
+
+        function obterValorNumerico(input) {
+            if (!input || !input.value) return 0;
+            const valorNumerico = input.value.replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '');
+            const numero = parseFloat(valorNumerico);
+            return isNaN(numero) ? 0 : numero;
+        }
+
+        function atualizarDiasPelaData() {
+            if (elements.dataVencimento.value) {
+                const dataVenc = new Date(elements.dataVencimento.value + 'T00:00:00');
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+                
+                const diffDays = Math.floor((hoje - dataVenc) / (1000 * 60 * 60 * 24));
+                elements.diasAtraso.value = diffDays > 0 ? diffDays : 0;
+            }
+            calcularJurosBoleto();
+        }
+
+        function calcularJurosBoleto() {
+            const valorBoleto = obterValorNumerico(elements.valorBoleto);
+            const diasAtraso = Math.max(0, parseInt(elements.diasAtraso.value, 10) || 0);
+            
+            if (valorBoleto <= 0) {
+                elements.valorOriginal.textContent = formatarReal(0);
+                elements.valorCobrarBox.textContent = formatarReal(0);
+                elements.liquidoReceberBox.textContent = formatarReal(0);
+                elements.valorMulta.textContent = formatarReal(0);
+                elements.valorJuros.textContent = formatarReal(0);
+                elements.diasAtrasoDisplay.textContent = '0';
+                elements.btnWhatsapp.classList.add('hidden');
+                elements.btnCopiar.classList.add('hidden');
+                return;
+            }
+            
+            const multa = diasAtraso > 0 ? valorBoleto * 0.02 : 0;
+            const juros = diasAtraso > 0 ? valorBoleto * (0.05 / 30) * diasAtraso : 0;
+            const encargosTotais = multa + juros;
+            const valorTotal = valorBoleto + encargosTotais;
+
+            ultimoCalculo = {
+                valorOriginal: valorBoleto,
+                diasAtraso: diasAtraso,
+                encargosTotais: encargosTotais,
+                valorTotal: valorTotal
+            };
+            
+            elements.valorOriginal.textContent = formatarReal(valorBoleto);
+            elements.valorCobrarBox.textContent = formatarReal(valorTotal);
+            elements.liquidoReceberBox.textContent = formatarReal(valorTotal);
+            elements.valorMulta.textContent = formatarReal(multa);
+            elements.valorJuros.textContent = formatarReal(juros);
+            elements.diasAtrasoDisplay.textContent = diasAtraso;
+            
+            elements.btnWhatsapp.classList.remove('hidden');
+            elements.btnCopiar.classList.remove('hidden');
+        }
+
+        function gerarMensagemCliente() {
+            const { valorOriginal, diasAtraso, encargosTotais, valorTotal } = ultimoCalculo;
+            const textoAtraso = diasAtraso === 1 ? '1 dia' : `${diasAtraso} dias`;
+            const dataVencFormatada = elements.dataVencimento.value
+                ? new Date(elements.dataVencimento.value + 'T00:00:00').toLocaleDateString('pt-BR')
+                : '';
+
+            let mensagem = `Olá! Tudo bem? 😊\n\n`;
+            mensagem += `Passando para enviar a atualização do seu boleto da *IDNARI & JMF Cosméticos* para pagamento hoje:\n\n`;
+            if (dataVencFormatada) {
+                mensagem += `📅 *Vencimento:* ${dataVencFormatada}\n`;
+            }
+            mensagem += `• *Valor:* ${formatarReal(valorOriginal)}\n`;
+            mensagem += `• *Atraso:* ${textoAtraso}\n`;
+            mensagem += `• *Juros:* ${formatarReal(encargosTotais)}\n`;
+            mensagem += `• *Valor Total:* ${formatarReal(valorTotal)}\n\n`;
+            mensagem += `Caso precise da segunda via atualizada ou do código de barras para pagamento, é só me avisar por aqui! ✨`;
+
+            return mensagem;
+        }
+
+        function compartilharWhatsApp() {
+            const mensagem = gerarMensagemCliente();
+            const mensagemCodificada = encodeURIComponent(mensagem);
+            window.location.href = `https://wa.me/?text=${mensagemCodificada}`;
+        }
+
+        function copiarResumo() {
+            const mensagem = gerarMensagemCliente();
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(mensagem).then(() => {
+                    const textoOriginal = elements.btnCopiar.textContent;
+                    elements.btnCopiar.textContent = '✅ Copiado!';
+                    setTimeout(() => {
+                        elements.btnCopiar.textContent = textoOriginal;
+                    }, 2000);
+                });
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = mensagem;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                const textoOriginal = elements.btnCopiar.textContent;
+                elements.btnCopiar.textContent = '✅ Copiado!';
+                setTimeout(() => {
+                    elements.btnCopiar.textContent = textoOriginal;
+                }, 2000);
+            }
+        }
+
+        elements.valorBoleto.addEventListener('input', () => formatarInputValor(elements.valorBoleto));
+        elements.dataVencimento.addEventListener('change', atualizarDiasPelaData);
+        elements.diasAtraso.addEventListener('input', calcularJurosBoleto);
+        elements.btnWhatsapp.addEventListener('click', compartilharWhatsApp);
+        elements.btnCopiar.addEventListener('click', copiarResumo);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const hoje = new Date();
+            const ano = hoje.getFullYear();
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            elements.dataVencimento.value = `${ano}-${mes}-${dia}`;
+            calcularJurosBoleto();
+        });
+    </script>
+</body>
+</html>
