@@ -1,0 +1,40 @@
+name: Gerar APK Offline
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar arquivos do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Criar projeto Capacitor e compilar APK
+        run: |
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npx cap init "Boletos IDNARI & JMF" "com.idnarijmf.boletos" --web-dir www
+          npx cap add android
+          sed -i 's/<\/manifest>/    <queries><package android:name="com.whatsapp" \/><package android:name="com.whatsapp.w4b" \/><\/queries>\n<\/manifest>/' android/app/src/main/AndroidManifest.xml
+          cd android && ./gradlew assembleDebug
+
+      - name: Salvar APK para download
+        uses: actions/upload-artifact@v4
+        with:
+          name: Calculadora-Boletos-IDNARI-JMF
+          path: android/app/build/outputs/apk/debug/app-debug.apk
